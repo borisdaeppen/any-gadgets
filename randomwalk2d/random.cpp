@@ -18,13 +18,32 @@ using namespace std;
 
 int main(int argc, char* argv[])
 {
-    int steps = 100000;  // default value
+    int   steps = 100000;  // default value
+    bool invert = false;
 
     /* parsing commandline options */
     if(argc > 1)
     {
         steps = atoi(argv[1]);
+        if(steps < 1)
+        {
+            cout << "usage: steps [number [invert]]" << endl;
+            cout << "             number: amount of iterations" << endl;
+            cout << "             invert: invert output colors" << endl;
+            return(1);
+        }
+        /*else(steps > 50000000)
+        {
+            cout << "this number is probably to large" << endl;
+            return(1);
+        }*/
         cout << "from cmdline: " << steps << endl;
+
+        if(argc > 2)
+        {
+            invert = true;
+            cout << "inverting colors" << endl;
+        }
     }
     else
     {
@@ -166,14 +185,30 @@ int main(int argc, char* argv[])
     float        scale = 0;
     float          val = 0;
     float      maxValF = maxVal;
-    for(int y=0;y<height;y++)
+    if(invert) // if-else is top of for due to performance reasons
     {
-        for(int x=0;x<width;x++)
+        for(int y=0;y<height;y++)
         {
-            scale = (float)(maxValF / 255);
-            val   = (float)(data[x][y]);
-            color = (int)((val / scale) + 0.5);
-            image[y][x] = png::rgb_pixel(color, color, color);
+            for(int x=0;x<width;x++)
+            {
+                scale = (float)(maxValF / 255);
+                val   = (float)(data[x][y]);
+                color = 255 - (int)((val / scale) + 0.5);
+                image[y][x] = png::rgb_pixel(color, color, color);
+            }
+        }
+    }
+    else
+    {
+        for(int y=0;y<height;y++)
+        {
+            for(int x=0;x<width;x++)
+            {
+                scale = (float)(maxValF / 255);
+                val   = (float)(data[x][y]);
+                color = (int)((val / scale) + 0.5);
+                image[y][x] = png::rgb_pixel(color, color, color);
+            }
         }
     }
 
