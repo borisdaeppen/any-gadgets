@@ -102,7 +102,7 @@ int main(int argc, char* argv[])
        we use vector instead of array so that
        data is on heap not on stack
     */
-    vector<vector<int> > data ( width+1, vector<int> ( height+1, 255 ) );
+    vector<vector<int> > data ( width+1, vector<int> ( height+1, 0 ) );
 
     /* calculate starting point for walking */
     xPos = -1 * maxReachedLEFT;
@@ -163,16 +163,16 @@ int main(int argc, char* argv[])
     */
     png::image< png::rgb_pixel > image(width, height);
     unsigned int color = 0;
-    float scale   = 0;
-    float val     = 0;
-    float maxValF = maxVal;
+    float        scale = 0;
+    float          val = 0;
+    float      maxValF = maxVal;
     for(int y=0;y<height;y++)
     {
         for(int x=0;x<width;x++)
         {
             scale = (float)(maxValF / 255);
-            val = data[x][y];
-            color = 255 - (int)((val / scale) + 0.5);
+            val   = (float)(data[x][y]);
+            color = (int)((val / scale) + 0.5);
             image[y][x] = png::rgb_pixel(color, color, color);
         }
     }
