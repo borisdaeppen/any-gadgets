@@ -3,22 +3,22 @@ use strict;
 use warnings;
 
 # radius
-my $r = $ARGV[0] || 15;
+my $r = $ARGV[0] || 20;
 
 # char for drawing
 my $c = $ARGV[1] || '.';
 
 # rows are diameter (2 x radius)
-for (my $x=1; $x<=$r*2; $x++) {
+for my $x (1 .. $r*2) {
     # columns are also diameter
-    for (my $y=1; $y<=$r*2; $y++) {
+    for my $y (1 .. $r*2) {
 
         # if Phytagoras tells us point is in radius...
         if (
-                (($r - $x)*($r - $x))
-              + (($r - $y)*($r - $y))
+                ($r - $x)**2
+              + ($r - $y)**2
             
-          < $r * $r) {
+            < $r**2) {
 
             # ...print a char...
             print $c;
