@@ -1,0 +1,1 @@
+cat cmd.sql | mysql -uvmadmin -p examin

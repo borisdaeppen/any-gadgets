@@ -1,0 +1,1 @@
+SELECT examin.Software.name FROM examin.Rechner JOIN examin.Software ON examin.Rechner.fksoftware = examin.Software.pkid JOIN examin.Standort ON examin.Rechner.fkstandort = examin.Standort.pkid WHERE examin.Standort.name = "E101";
