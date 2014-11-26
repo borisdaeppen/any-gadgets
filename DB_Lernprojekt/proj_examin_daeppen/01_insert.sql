@@ -1,5 +1,3 @@
-USE examin;
-
 INSERT INTO Standort (pkid,name) VALUES (1,"E101");
 INSERT INTO Standort (pkid,name) VALUES (2,"E303");
 INSERT INTO Standort (pkid,name) VALUES (3,"E109");

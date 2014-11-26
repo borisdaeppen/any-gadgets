@@ -13,12 +13,7 @@ my $port     = "3306";
 
 my $user     = "vmuser";
 my $pw       = "gibbiX12345";
-my $data_source_name = "dbi:mysql:examin:localhost:3306";
 
-my $db_handle = DBI->connect($data_source_name,
-                             $user,
-                             $pw,
-                            );
 # Startseite mit Projektübersicht
 get '/' => sub {
     my $c = shift;
@@ -55,10 +50,13 @@ get '/:project' => sub {
     closedir $dir_handle;
 
     my $html = "<!DOCTYPE html>\n<html><body>"
-             . "<h1>Datenbank Projekte in $proj_name</h1><ul>";
+             . "<h1>Datenbank Projekte in $proj_name</h1><ul>"
+             . '<p>Die Datei <i>00_create.sql</i> muss auf der Konsole '
+             . 'eingelesen werden.</p>';
 
     foreach my $file_entry (sort @files) {
         next unless ($file_entry =~ /\.sql$/);
+        next if     ($file_entry =~ /^00_/);
         $html .= "<li><a href='$proj_dir/$file_entry'>$file_entry</a></li>";
     }
 
@@ -72,30 +70,50 @@ get '/:project/:sql' => sub {
     my $proj_dir = $c->param('project');
     my $sql_file = $c->param('sql');
 
-    # in der route wird scheinbar das .sql entfernt...
-    my @sql_cmd = read_file( "$proj_dir/$sql_file.sql" ) ;
-
-    my $standorte = $db_handle->prepare($sql_cmd[0]);
-    
-    $standorte->execute;
-    
-    my $res = $standorte->fetchall_arrayref();
-    
-    my $html = "<!DOCTYPE html>\n<html><body>"
-             . "<h3>$sql_cmd[0]</h3><table border='1'>";
-
-    foreach my $row (@{$res}) {
-        $html .= '<tr>';
-        foreach my $col (@{$row}) {
-            $html .= '<td>';
-            $html .= $col;
-            $html .= '</td>';
-        }
-        $html .= '</tr>';
+    my $proj_name = $proj_dir;
+    if ($proj_dir =~ /proj_([^_]*)_.*/) {
+        $proj_name = $1;
     }
-    $html .= '</table></body></html>';
+
+    my $data_source_name = "dbi:$platform:$proj_name:$host:$port";
+
+    my $db_handle = DBI->connect($data_source_name,
+                                 $user,
+                                 $pw,
+                                );
+
+    # in der route wird scheinbar das .sql entfernt...
+    my @sql_cmds = read_file( "$proj_dir/$sql_file.sql" ) ;
+
+    my $html = "<!DOCTYPE html>\n<html><body>";
+
+    foreach my $sql_cmd (@sql_cmds) {
+
+        next if ($sql_cmd =~ /^\s$/);
+print $sql_cmd ."-----\n";
+        my $cmd_handle = $db_handle->prepare($sql_cmd);
+        
+        $cmd_handle->execute;
+        
+        my $res = $cmd_handle->fetchall_arrayref();
+        
+        $html .= "<h3>$sql_cmd</h3><table border='1'>";
+
+        foreach my $row (@{$res}) {
+            $html .= '<tr>';
+            foreach my $col (@{$row}) {
+                $html .= '<td>';
+                $html .= $col;
+                $html .= '</td>';
+            }
+            $html .= '</tr>';
+        }
+        $html .= '</table>';
+    }
+    $html .= '</body></html>';
 
     $c->render(text => $html, format => 'html');
 };
-# Start the Mojolicious command system
+
 app->start;
+
