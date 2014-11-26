@@ -89,28 +89,35 @@ get '/:project/:sql' => sub {
 
     foreach my $sql_cmd (@sql_cmds) {
 
-        next if ($sql_cmd =~ /^\s$/);
-print $sql_cmd ."-----\n";
+        chomp $sql_cmd;
+
+        next if ($sql_cmd =~ /^\s*$/);
+
+        $html .= "\n<h3>$sql_cmd</h3>";
+
         my $cmd_handle = $db_handle->prepare($sql_cmd);
         
-        $cmd_handle->execute;
+        my $c = $cmd_handle->execute;
+        next unless ($c);
         
         my $res = $cmd_handle->fetchall_arrayref();
+        next unless ($res);
         
-        $html .= "<h3>$sql_cmd</h3><table border='1'>";
+        $html .= "\n<table border='1'>";
 
         foreach my $row (@{$res}) {
-            $html .= '<tr>';
+            $html .= "\n<tr>";
             foreach my $col (@{$row}) {
                 $html .= '<td>';
                 $html .= $col;
                 $html .= '</td>';
             }
-            $html .= '</tr>';
+            $html .= "</tr>\n";
         }
-        $html .= '</table>';
+        $html .= "\n</table>";
+        $cmd_handle->finish();
     }
-    $html .= '</body></html>';
+    $html .= "\n</body></html>";
 
     $c->render(text => $html, format => 'html');
 };
