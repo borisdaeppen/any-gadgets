@@ -1,0 +1,30 @@
+sudo apt-get install libmojolicious-perl libdbi-perl libdbd-mysql-perl libfile-slurp-perl
+sudo apt-get install mysql-server
+
+# Benutzer für mysql einrichten:
+mysql -uroot -p
+# in der sql-shell:
+CREATE USER 'vmuser'@'localhost' IDENTIFIED BY 'gibbiX12345';
+GRANT ALL PRIVILEGES ON * . * TO 'vmuser'@'localhost';
+FLUSH PRIVILEGES;
+
+# Projekt-Code holen
+wget https://github.com/borisdaeppen/any-gadgets/archive/master.zip
+unzip master.zip
+
+#nicht benötigtes löschen
+mv any-gadgets-master/DB_Lernprojekt .
+rm -Rf any-gadgets-master master.zip
+cd DB_Lernprojekt
+
+# Beispiel-DB einlesen (create statements ausführen im Skript "DB_Lernprojekt/proj_examin_daeppen/00_create.sql" )
+./read_all_creates.sh
+
+# Perl Web-Skript starten
+perl webgui.pl daemon
+
+# Webseite im Browser öffnen
+firefox 127.0.0.1:3000
+
+# im Browser ins Beispiel-Projekt reingehen und auf 01_insert.sql klicken um die DB zu befüllen.
+# dann auf andere Sachen klicken um die Ergebnisse anzuzeigen

@@ -1,1 +1,0 @@
-cat proj_examin_daeppen/00_create.sql | mysql -uvmuser -p 
