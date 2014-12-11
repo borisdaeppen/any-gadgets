@@ -95,16 +95,23 @@ get '/:project/:sql' => sub {
 
         $html .= "\n<h3>$sql_cmd</h3>";
 
+        $html .= "\n<table border='1'>";
+
         my $cmd_handle = $db_handle->prepare($sql_cmd);
         
         my $c = $cmd_handle->execute;
         next unless ($c);
+
+        my $fields = $cmd_handle->{NAME};
+        $html .= "\n<tr>";
+        foreach my $row (@{$fields}) {
+            $html .= "<th>$row</th>";
+        }
+        $html .= "</tr>\n";
         
         my $res = $cmd_handle->fetchall_arrayref();
         next unless ($res);
         
-        $html .= "\n<table border='1'>";
-
         foreach my $row (@{$res}) {
             $html .= "\n<tr>";
             foreach my $col (@{$row}) {
