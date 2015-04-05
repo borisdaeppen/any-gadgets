@@ -17,10 +17,29 @@ then
   exit 1
 fi
 
+# realpath muss auf Debian/Ubuntu nachinstalliert werden
+if ! type "realpath" > /dev/null; then
+  echo ""
+  echo "  Das Programm 'realpath' wird benötigt. Bitte installieren."
+  echo "    sudo aptitude install realpath"
+  echo "  oder"
+  echo "    sudo apt-get install realpath"
+  echo ""
+  exit 1
+fi
+
+# Prüfen ob die angegebenen Pfade existieren und lesbar sind
+for i in $1 $2; do
+    if [ ! -r $i ]; then
+      echo "Ordner nicht lesbar/existen: $i"
+      exit 1
+    fi
+done
+
 # Pfad zu Daten und Fullbackup sollen absolut sein
-# (realpath muss auf Debian/Ubuntu nachinstalliert werden)
 DATA=$(realpath $1)
 FULL=$(realpath $2)
+
 
 # wir gehen alle Dateien im Daten-Verzeichnis durch...
 for i in $(find $DATA -type f)
