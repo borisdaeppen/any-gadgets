@@ -48,6 +48,14 @@ do
   # Bsp: aus /home/user/data/fotos/ich.jpg wird /fotos/ich.jpg
   # (interne string-manipulation mit bash)
   FILE=${i#${DATA}}
+
+  # Wir testen ob die Datei im Backup NICHT existiert.
+  # Ist dies der Fall, dann muss die Datei gesichert werden.
+  # (es würde auch ohne dieses if gehen, könnte aber evtl zu Bugs führen)
+  if [ ! -e $FULL$FILE ]; then
+    echo $i
+    continue # zurück zum Anfang der Schleife
+  fi
   
   # Abfragen der Modifikationszeit für Dateien im Daten und Backupordner
   DATA_STATS=$(stat --printf="%Y" $DATA$FILE)
@@ -61,3 +69,6 @@ do
   fi
 done
 
+# Dieses Skript erfasst nicht wenn Dateien gelöscht werden!
+# Dies wäre in einem differentiellen Backup auch nicht möglich.
+# Gelöschte Dateien werden nur in der nächsten Vollsicherung berücksichtigt
