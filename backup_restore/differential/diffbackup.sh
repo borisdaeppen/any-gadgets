@@ -49,13 +49,13 @@ do
   # (interne string-manipulation mit bash)
   FILE=${i#${DATA}}
   
-  # Abfragen des Änderungsdatums für Dateien im Daten und Backupordner
-  DATA_STATS=$(stat --printf="%z" $DATA$FILE)
-  FULL_STATS=$(stat --printf="%z" $FULL$FILE)
+  # Abfragen der Modifikationszeit für Dateien im Daten und Backupordner
+  DATA_STATS=$(stat --printf="%Y" $DATA$FILE)
+  FULL_STATS=$(stat --printf="%Y" $FULL$FILE)
 
   # die Dateien im Dataordner auflisten welche ein anderes Änderungsdatum
   # haben als im Ordner des Fullbackup
-  if [ "$DATA_STATS" = "$FULL_STATS" ]
+  if [ "$DATA_STATS" != "$FULL_STATS" ]
   then
     echo $i
   fi
