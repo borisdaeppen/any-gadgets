@@ -47,25 +47,25 @@ do
   # pro Datei nehmen wir nur die relative Pfadangabe
   # Bsp: aus /home/user/data/fotos/ich.jpg wird /fotos/ich.jpg
   # (interne string-manipulation mit bash)
-  FILE=${i#${DATA}}
+  FILE=${i#${DATA}/}
 
   # Wir testen ob die Datei im Backup NICHT existiert.
   # Ist dies der Fall, dann muss die Datei gesichert werden.
   # (es würde auch ohne dieses if gehen, könnte aber evtl zu Bugs führen)
-  if [ ! -e $FULL$FILE ]; then
-    echo $i
+  if [ ! -e "$FULL/$FILE" ]; then
+    echo $FILE
     continue # zurück zum Anfang der Schleife
   fi
   
   # Abfragen der Modifikationszeit für Dateien im Daten und Backupordner
-  DATA_STATS=$(stat --printf="%Y" $DATA$FILE)
-  FULL_STATS=$(stat --printf="%Y" $FULL$FILE)
+  DATA_STATS=$(stat --printf="%Y" "$DATA/$FILE")
+  FULL_STATS=$(stat --printf="%Y" "$FULL/$FILE")
 
   # die Dateien im Dataordner auflisten welche ein anderes Änderungsdatum
   # haben als im Ordner des Fullbackup
   if [ "$DATA_STATS" != "$FULL_STATS" ]
   then
-    echo $i
+    echo $FILE
   fi
 done
 

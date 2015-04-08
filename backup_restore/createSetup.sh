@@ -10,10 +10,15 @@ echo "B" > b.jpg
 cd ../docs
 echo "Foo Bar" > zeugs.txt
 
+sleep 1
+
 cd ../..
 cp -a data full_1
 
-echo "X" > data/hallo.txt
-echo "Y" > data/fotos/b.jpg
-echo "Z" > data/docs/zeugs.txt
+sleep 1
 
+echo "X" >> data/hallo.txt
+echo "Y" >> data/fotos/b.jpg
+echo "Z" >> data/docs/zeugs.txt
+
+touch data/neu.txt
